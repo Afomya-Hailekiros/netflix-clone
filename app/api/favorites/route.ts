@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    await dbConnect()
+    await dbConnect()  // parentheses added
     const favorites = await Favorite.find({ userEmail: session.user.email }).lean()
     return NextResponse.json(favorites)
   } catch (error) {
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing movieId" }, { status: 400 })
     }
 
-    await dbConnect()
+    await dbConnect() // parentheses added
 
     const existing = await Favorite.findOne({
       userEmail: session.user.email,
@@ -64,7 +64,7 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Missing movieId" }, { status: 400 })
     }
 
-    await dbConnect()
+    await dbConnect() // parentheses added
     await Favorite.deleteOne({ userEmail: session.user.email, movieId })
 
     return NextResponse.json({ message: "Removed from favorites" })

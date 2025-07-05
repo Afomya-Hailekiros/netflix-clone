@@ -1,4 +1,3 @@
-// app/api/auth/login/route.ts
 import { compare } from "bcrypt"
 import { NextResponse } from "next/server"
 import clientPromise from "@/lib/mongodb"

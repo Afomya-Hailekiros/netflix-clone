@@ -1,4 +1,3 @@
-// app/api/auth/register/route.ts
 import { NextResponse } from "next/server"
 import { hash } from "bcrypt"
 import clientPromise from "@/lib/mongodb"
@@ -9,7 +8,8 @@ export async function POST(req: Request) {
   const db = client.db()
 
   const userExists = await db.collection("users").findOne({ email })
-  if (userExists) return NextResponse.json({ message: "User already exists" }, { status: 400 })
+  if (userExists)
+    return NextResponse.json({ message: "User already exists" }, { status: 400 })
 
   const hashedPassword = await hash(password, 12)
 
