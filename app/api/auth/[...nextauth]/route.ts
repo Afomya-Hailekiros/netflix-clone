@@ -14,15 +14,20 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const res = await fetch("http://localhost:3000/api/auth/login", {
-          method: "POST",
-          body: JSON.stringify(credentials),
-          headers: { "Content-Type": "application/json" },
-        })
+        try {
+          const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/login`, {
+            method: "POST",
+            body: JSON.stringify(credentials),
+            headers: { "Content-Type": "application/json" },
+          })
 
-        const user = await res.json()
-        if (res.ok && user) return user
-        return null
+          const user = await res.json()
+          if (res.ok && user) return user
+          return null
+        } catch (error) {
+          console.error("Auth error:", error)
+          return null
+        }
       },
     }),
   ],
