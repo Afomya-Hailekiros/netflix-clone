@@ -6,7 +6,7 @@ import { Movie } from "@/lib/models/movie"
 
 export async function POST(req: Request) {
   try {
-    await dbConnect
+    await dbConnect()  // <-- fixed: call as function
 
     const body = await req.json()
     const { title, description, genre, thumbnailUrl, videoUrl, isFeatured } = body
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    await dbConnect
+    await dbConnect()  // <-- fixed: call as function
     const movies = await Movie.find().sort({ createdAt: -1 }).lean()
     return NextResponse.json(movies)
   } catch (error) {

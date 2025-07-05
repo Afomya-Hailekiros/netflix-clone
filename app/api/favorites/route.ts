@@ -5,10 +5,9 @@ import { authOptions } from "@/lib/authOptions"
 import { NextResponse } from "next/server"
 
 export async function GET(request: Request) {
-  // pass request to getServerSession
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) {
-    return NextResponse.json([], { status: 401 }) // Unauthorized returns empty array
+    return NextResponse.json([], { status: 401 })
   }
 
   try {

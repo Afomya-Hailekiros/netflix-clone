@@ -1,52 +1,62 @@
 // app/api/movies/[id]/route.ts
+
+import { NextResponse } from "next/server"
 import dbConnect from "@/lib/mongoose"
 import { Movie } from "@/lib/models/movie"
-import { NextResponse } from "next/server"
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  await dbConnect()
-  const movie = await Movie.findById(params.id).lean()
-  if (!movie) return NextResponse.json({ error: "Not found" }, { status: 404 })
-
-  const related = await Movie.find({
-    _id: { $ne: (movie as any)._id },
-    genre: { $in: (movie as any).genre },
-  })
-    .limit(6)
-    .lean()
-
-  return NextResponse.json({ movie, related })
+interface Params {
+  params: {
+    id: string
+  }
 }
-export async function DELETE(
-  _: Request,
-  { params }: { params: { id: string } }
-) {
+
+export async function GET(request: Request, { params }: Params) {
+  const { id } = params
+
   try {
     await dbConnect()
-    const deleted = await Movie.findByIdAndDelete(params.id)
+
+    const movie = await Movie.findById(id).lean()
+
+    if (!movie) {
+      return NextResponse.json({ error: "Movie not found" }, { status: 404 })
+    }
+
+    return NextResponse.json(movie)
+  } catch (error) {
+    console.error("Error fetching movie:", error)
+    return NextResponse.json({ error: "Failed to fetch movie" }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request, { params }: Params) {
+  const { id } = params
+
+  try {
+    await dbConnect()
+
+    const deleted = await Movie.findByIdAndDelete(id)
 
     if (!deleted) {
       return NextResponse.json({ error: "Movie not found" }, { status: 404 })
     }
 
-    return NextResponse.json({ message: "Movie deleted successfully" })
+    return NextResponse.json({ message: "Movie deleted" })
   } catch (error) {
-    console.error("Failed to delete movie:", error)
-    return NextResponse.json({ error: "Delete failed" }, { status: 500 })
+    console.error("Error deleting movie:", error)
+    return NextResponse.json({ error: "Failed to delete movie" }, { status: 500 })
   }
 }
-export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+
+export async function PATCH(request: Request, { params }: Params) {
+  const { id } = params
+
   try {
+    const body = await request.json()
+
     await dbConnect()
-    const body = await req.json()
-    const updatedMovie = await Movie.findByIdAndUpdate(
-      params.id,
-      body,
-      { new: true }
-    ).lean()
+
+    const updatedMovie = await Movie.findByIdAndUpdate(id, body, { new: true })
 
     if (!updatedMovie) {
       return NextResponse.json({ error: "Movie not found" }, { status: 404 })
@@ -54,7 +64,7 @@ export async function PATCH(
 
     return NextResponse.json(updatedMovie)
   } catch (error) {
-    console.error("Failed to update movie:", error)
-    return NextResponse.json({ error: "Update failed" }, { status: 500 })
+    console.error("Error updating movie:", error)
+    return NextResponse.json({ error: "Failed to update movie" }, { status: 500 })
   }
 }

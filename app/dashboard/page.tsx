@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth"
-import { authOptions } from "../api/auth/[...nextauth]/route"
+import { authOptions } from "@/lib/authOptions"
 import DashboardClient from "./DashboardClient"
 import dbConnect from "@/lib/mongoose"
 import { Movie } from "@/lib/models/movie"
