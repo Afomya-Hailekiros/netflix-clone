@@ -4,12 +4,12 @@ import { Movie } from "@/lib/models/movie"
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
     await dbConnect()
 
-    const movie = await Movie.findById(params.id).lean()
+    const movie = await Movie.findById(context.params.id).lean()
 
     if (!movie) {
       return NextResponse.json({ error: "Movie not found" }, { status: 404 })
